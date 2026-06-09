@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Springbrook Dentistry — Team Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1D9E75; --green-dark: #0F6E56; --green-light: #E1F5EE; --green-mid: #9FE1CB;
+  --text: #1a1a1a; --text-2: #555; --text-3: #999;
+  --border: #e8e8e4; --bg: #fafaf8; --white: #ffffff;
+  --radius: 10px; --radius-lg: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.layout { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar { width: 230px; background: var(--white); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 10; overflow-y: auto; }
+.sidebar-logo { padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid var(--border); }
+.practice { font-family: 'DM Serif Display', serif; font-size: 17px; line-height: 1.2; }
+.tagline { font-size: 11px; color: var(--text-3); margin-top: 2px; letter-spacing: 0.04em; }
+.dot { color: var(--green); }
+.nav { padding: 0.75rem; flex: 1; display: flex; flex-direction: column; gap: 1px; }
+.nav-section { font-size: 10px; letter-spacing: 0.08em; color: var(--text-3); padding: 10px 10px 3px; text-transform: uppercase; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius); font-size: 13px; cursor: pointer; color: var(--text-2); border: none; background: none; width: 100%; text-align: left; transition: all 0.12s; }
+.nav-item:hover { background: var(--bg); color: var(--text); }
+.nav-item.active { background: var(--green-light); color: var(--green-dark); font-weight: 500; }
+.nav-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.65; }
+.nav-item.active .nav-icon { opacity: 1; }
+.sidebar-footer { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-3); line-height: 1.5; }
+
+/* MAIN */
+.main { margin-left: 230px; flex: 1; display: flex; flex-direction: column; }
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0.875rem 1.75rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 5; }
+.page-title { font-size: 15px; font-weight: 500; }
+.topbar-right { display: flex; gap: 8px; }
+.btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: var(--radius); font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.12s; }
+.btn-primary { background: var(--green); color: white; border: none; font-weight: 500; }
+.btn-primary:hover { background: var(--green-dark); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text-2); }
+.btn-ghost:hover { background: var(--bg); }
+.content { padding: 1.75rem; flex: 1; }
+.view { display: none; }
+.view.active { display: block; }
+
+/* BOARD */
+.toolbar { display: flex; gap: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; align-items: center; }
+.sel { font-size: 13px; padding: 6px 10px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--white); color: var(--text); font-family: 'DM Sans', sans-serif; }
+.board-cols { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.col { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.col-head { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.col-label { display: flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; }
+.col-dot { width: 7px; height: 7px; border-radius: 50%; }
+.col-count { font-size: 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 1px 7px; color: var(--text-3); }
+.cards { padding: 8px; display: flex; flex-direction: column; gap: 7px; min-height: 60px; }
+.card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.card-top { display: flex; gap: 8px; margin-bottom: 7px; }
+.card-title { font-size: 13px; line-height: 1.4; flex: 1; }
+.badge { font-size: 10px; padding: 2px 6px; border-radius: 20px; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
+.bh { background: #fde8e8; color: #b91c1c; }
+.bm { background: #fef3c7; color: #92400e; }
+.bl { background: #d1fae5; color: #065f46; }
+.card-foot { display: flex; align-items: center; justify-content: space-between; }
+.av-pill { display: flex; align-items: center; gap: 5px; }
+.av { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; flex-shrink: 0; }
+.av-name { font-size: 11px; color: var(--text-2); }
+.due-lbl { font-size: 11px; color: var(--text-3); }
+.due-lbl.over { color: #b91c1c; }
+.card-acts { display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap; }
+.cbtn { font-size: 10px; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-2); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.cbtn:hover { border-color: var(--green); color: var(--green); }
+.cbtn.done-btn { border-color: var(--green-mid); color: var(--green); }
+.cbtn.del { margin-left: auto; color: var(--text-3); }
+.cbtn.del:hover { border-color: #fca5a5; color: #b91c1c; }
+.card-note { font-size: 11px; color: var(--text-3); margin-top: 6px; font-style: italic; border-top: 1px solid var(--border); padding-top: 6px; }
+.empty-col { font-size: 12px; color: var(--text-3); text-align: center; padding: 16px 8px; }
+.spinner-wrap { text-align:center; padding: 3rem; color: var(--text-3); font-size: 13px; }
+.spinner { width:18px; height:18px; border:2px solid var(--border); border-top-color:var(--green); border-radius:50%; animation:spin 0.7s linear infinite; margin:0 auto 8px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.err-box { background:#fde8e8; border:1px solid #fca5a5; border-radius:var(--radius); padding:10px 14px; font-size:13px; color:#b91c1c; margin-bottom:1rem; }
+
+/* MY TASKS */
+.ptabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1.25rem; }
+.ptab { padding:6px 12px; border-radius:20px; font-size:12px; cursor:pointer; border:1px solid var(--border); background:var(--white); color:var(--text-2); display:flex; align-items:center; gap:6px; transition:all 0.12s; }
+.ptab.active { background:var(--green-light); border-color:var(--green-mid); color:var(--green-dark); font-weight:500; }
+.tlist { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+.trow { display:flex; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--border); }
+.trow:last-child { border-bottom:none; }
+.chk { width:18px; height:18px; border-radius:50%; border:1.5px solid var(--border); background:transparent; cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:9px; transition:all 0.12s; }
+.chk:hover { border-color:var(--green); }
+.chk.chkd { background:var(--green); border-color:var(--green); color:white; }
+.tinfo { flex:1; }
+.tname { font-size:13px; color:var(--text); }
+.tname.done { text-decoration:line-through; color:var(--text-3); }
+.tmeta { font-size:11px; color:var(--text-3); margin-top:2px; display:flex; gap:7px; }
+.sec-head { font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-3); padding:8px 14px 5px; background:var(--bg); border-bottom:1px solid var(--border); font-weight:500; }
+
+/* CALENDAR */
+.cal-wrap { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
+.cal-head { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border); }
+.cal-month { font-size:15px; font-weight:500; }
+.cal-nav { display:flex; gap:6px; }
+.cal-nav button { padding:4px 10px; border-radius:var(--radius); border:1px solid var(--border); background:transparent; cursor:pointer; font-size:13px; font-family:'DM Sans',sans-serif; color:var(--text-2); }
+.cal-nav button:hover { background:var(--bg); }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); }
+.cal-dow { text-align:center; padding:8px 0; font-size:11px; font-weight:500; color:var(--text-3); border-bottom:1px solid var(--border); text-transform:uppercase; letter-spacing:0.05em; }
+.cal-day { min-height:80px; border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:6px; position:relative; vertical-align:top; }
+.cal-day:nth-child(7n) { border-right:none; }
+.cal-day.empty { background:var(--bg); }
+.cal-day.today .day-num { background:var(--green); color:white; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+.day-num { font-size:12px; font-weight:500; color:var(--text-2); width:22px; height:22px; display:flex; align-items:center; justify-content:center; margin-bottom:3px; }
+.cal-event { font-size:10px; padding:2px 5px; border-radius:4px; margin-bottom:2px; line-height:1.3; cursor:pointer; }
+.cal-event.task-ev { background:#E6F1FB; color:#185FA5; }
+.cal-event.holiday-ev { background:var(--green-light); color:var(--green-dark); }
+.cal-legend { display:flex; gap:14px; padding:10px 16px; border-top:1px solid var(--border); font-size:11px; color:var(--text-2); flex-wrap:wrap; }
+.leg-dot { width:10px; height:10px; border-radius:3px; display:inline-block; margin-right:4px; }
+
+/* MEMBERS */
+.mgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; }
+.mcard { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.1rem 1.25rem; display:flex; align-items:center; gap:12px; }
+.mav { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:600; flex-shrink:0; }
+.mname { font-size:14px; font-weight:500; }
+.mrole { font-size:11px; color:var(--text-3); margin-top:2px; }
+
+/* CONTENT PAGES */
+.cc { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.75rem; }
+.cc h2 { font-family:'DM Serif Display',serif; font-size:22px; margin-bottom:0.4rem; }
+.cc .sub { font-size:13px; color:var(--text-2); margin-bottom:1.5rem; padding-bottom:1.25rem; border-bottom:1px solid var(--border); }
+.sop-nav { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1.5rem; }
+.sop-tab { padding:5px 12px; border-radius:20px; font-size:12px; cursor:pointer; border:1px solid var(--border); background:var(--white); color:var(--text-2); transition:all 0.12s; }
+.sop-tab.active { background:var(--green-light); border-color:var(--green-mid); color:var(--green-dark); font-weight:500; }
+.sop-panel { display:none; }
+.sop-panel.active { display:block; }
+.sop-section { margin-bottom:1.25rem; }
+.sop-section-head { font-size:12px; font-weight:600; color:var(--green-dark); background:var(--green-light); padding:6px 12px; border-radius:6px; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.05em; }
+.sop-item { display:flex; gap:10px; padding:7px 10px; background:var(--bg); border-radius:7px; margin-bottom:4px; border:1px solid var(--border); align-items:flex-start; font-size:13px; line-height:1.4; }
+.sop-item b { font-weight:500; }
+.sop-note { font-size:12px; color:#92400e; background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:6px 10px; margin-top:6px; font-style:italic; }
+
+/* MODAL */
+.moverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.28); z-index:200; align-items:center; justify-content:center; }
+.moverlay.open { display:flex; }
+.modal { background:var(--white); border-radius:var(--radius-lg); border:1px solid var(--border); width:100%; max-width:430px; padding:1.5rem; margin:1rem; box-shadow:0 4px 24px rgba(0,0,0,0.08); }
+.modal h3 { font-size:15px; font-weight:500; margin-bottom:1rem; }
+.ff { margin-bottom:12px; }
+.ff label { font-size:12px; color:var(--text-2); display:block; margin-bottom:4px; }
+.ff input,.ff select,.ff textarea { width:100%; font-size:13px; padding:7px 10px; border-radius:var(--radius); border:1px solid var(--border); background:var(--white); color:var(--text); font-family:'DM Sans',sans-serif; }
+.ff textarea { resize:vertical; min-height:70px; }
+.macts { display:flex; gap:8px; justify-content:flex-end; margin-top:1rem; }
+.merr { font-size:12px; color:#b91c1c; margin-top:4px; display:none; }
+
+/* VALUES */
+.vgrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:1.5rem; }
+.vcard { background:var(--green-light); border:1px solid var(--green-mid); border-radius:var(--radius); padding:1rem; }
+.vtitle { font-size:13px; font-weight:600; color:var(--green-dark); margin-bottom:4px; }
+.vdesc { font-size:12px; color:var(--green-dark); opacity:0.85; line-height:1.5; }
+.mission-box { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem; margin-bottom:1.5rem; font-size:13px; color:var(--text-2); line-height:1.7; }
+.mission-box strong { display:block; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-3); margin-bottom:6px; }
+
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:relative;}
+  .main{margin-left:0;}
+  .board-cols{grid-template-columns:1fr;}
+  .layout{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="practice">Springbrook<span class="dot">.</span><br>Dentistry</div>
+    <div class="tagline">Team Portal · Version 1.0</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Workspace</div>
+    <button class="nav-item active" onclick="show('tasks')" id="nav-tasks">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Task Board
+    </button>
+    <button class="nav-item" onclick="show('mytasks')" id="nav-mytasks">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>My Tasks
+    </button>
+    <button class="nav-item" onclick="show('calendar')" id="nav-calendar">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Team Calendar
+    </button>
+    <button class="nav-item" onclick="show('members')" id="nav-members">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Team
+    </button>
+    <div class="nav-section" style="margin-top:6px;">Handbook</div>
+    <button class="nav-item" onclick="show('values')" id="nav-values">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Values
+    </button>
+    <button class="nav-item" onclick="show('sops')" id="nav-sops">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>SOPs
+    </button>
+    <button class="nav-item" onclick="show('policies')" id="nav-policies">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Policies
+    </button>
+  </nav>
+  <div class="sidebar-footer">Springbrook Dentistry<br>Alcoa, Tennessee · Est. 2025</div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="page-title">Task Board</div>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" onclick="loadTasks()" id="btn-refresh">↻ Refresh</button>
+      <button class="btn btn-primary" onclick="openModal()" id="btn-add">+ Add Task</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- TASK BOARD -->
+    <div class="view active" id="view-tasks">
+      <div class="toolbar">
+        <select class="sel" id="fp" onchange="renderBoard()">
+          <option value="">All staff</option>
+          <option>Genesis</option><option>Rosie</option><option>Matthew</option>
+          <option>Jaque</option><option>Rue</option><option>Dr C</option>
+        </select>
+        <select class="sel" id="fpr" onchange="renderBoard()">
+          <option value="">All priorities</option>
+          <option>High</option><option>Medium</option><option>Low</option>
+        </select>
+      </div>
+      <div id="berr"></div>
+      <div id="board"></div>
+    </div>
+
+    <!-- MY TASKS -->
+    <div class="view" id="view-mytasks">
+      <div class="ptabs" id="ptabs"></div>
+      <div id="mylist"></div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="view" id="view-calendar">
+      <div class="cal-wrap">
+        <div class="cal-head">
+          <div class="cal-month" id="cal-month-label"></div>
+          <div class="cal-nav">
+            <button onclick="calNav(-1)">&#8592;</button>
+            <button onclick="calNav(0)">Today</button>
+            <button onclick="calNav(1)">&#8594;</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="cal-dows"></div>
+        <div class="cal-grid" id="cal-days"></div>
+        <div class="cal-legend">
+          <span><span class="leg-dot" style="background:#E6F1FB;border:1px solid #185FA5"></span>Task due</span>
+          <span><span class="leg-dot" style="background:var(--green-light);border:1px solid var(--green-mid)"></span>Holiday / Practice closed</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div class="view" id="view-members">
+      <div class="mgrid" id="mgrid"></div>
+    </div>
+
+    <!-- VALUES -->
+    <div class="view" id="view-values">
+      <div class="cc">
+        <h2>Our Values</h2>
+        <p class="sub">The principles that guide how we show up for our patients and each other every day at Springbrook Dentistry.</p>
+        <div class="mission-box">
+          <strong>Mission Statement</strong>
+          To provide exceptional, compassionate dental care to the Alcoa community — making every patient feel valued, informed, and at ease. We build healthy smiles and lasting relationships, one appointment at a time.
+        </div>
+        <div class="vgrid">
+          <div class="vcard"><div class="vtitle">Patient First</div><div class="vdesc">Every decision we make starts with what is best for the patient in our chair.</div></div>
+          <div class="vcard"><div class="vtitle">Excellence</div><div class="vdesc">We hold ourselves to the highest clinical and service standards, every appointment.</div></div>
+          <div class="vcard"><div class="vtitle">Integrity</div><div class="vdesc">We are honest with patients and with each other. Always.</div></div>
+          <div class="vcard"><div class="vtitle">Teamwork</div><div class="vdesc">We communicate openly, support one another, and celebrate wins together.</div></div>
+          <div class="vcard"><div class="vtitle">Growth</div><div class="vdesc">We are a learning practice. We welcome feedback and pursue continuous improvement.</div></div>
+          <div class="vcard"><div class="vtitle">Accountability</div><div class="vdesc">We own our work, follow through on commitments, and lift each other up.</div></div>
+        </div>
+        <div style="font-size:13px;color:var(--text-2);line-height:1.7;">
+          <strong style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-3);margin-bottom:8px;">Daily Goal</strong>
+          RDH: <strong>$1,320</strong> &nbsp;|&nbsp; Dentist: <strong>$3,680</strong> &nbsp;|&nbsp; Practice Total: <strong>$5,000</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOPs -->
+    <div class="view" id="view-sops">
+      <div class="cc">
+        <h2>Standard Operating Procedures</h2>
+        <p class="sub">Springbrook Dentistry · Version 1.0 · June 2026 · Confidential — Internal Use Only</p>
+        <div class="sop-nav" id="sop-nav"></div>
+        <div id="sop-content"></div>
+      </div>
+    </div>
+
+    <!-- POLICIES -->
+    <div class="view" id="view-policies">
+      <div class="cc">
+        <h2>Policies</h2>
+        <p class="sub">HR, conduct, and operational policies for the Springbrook Dentistry team. Confidential — Internal Use Only.</p>
+        <div class="sop-nav" id="pol-nav"></div>
+        <div id="pol-content"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="moverlay" id="modal">
+  <div class="modal">
+    <h3>New Task</h3>
+    <div class="ff"><label>Task description</label><input type="text" id="t-title" placeholder="What needs to be done?"></div>
+    <div class="ff"><label>Assign to</label>
+      <select id="t-person"><option>Genesis</option><option>Rosie</option><option>Matthew</option><option>Jaque</option><option>Rue</option><option>Dr C</option></select>
+    </div>
+    <div class="ff"><label>Priority</label>
+      <select id="t-pri"><option>Medium</option><option>High</option><option>Low</option></select>
+    </div>
+    <div class="ff"><label>Due date</label><input type="date" id="t-due"></div>
+    <div class="ff"><label>Notes (optional)</label><textarea id="t-notes" placeholder="Any details..."></textarea></div>
+    <div class="merr" id="merr"></div>
+    <div class="macts">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="msave" onclick="saveTask()">Add Task</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const TOKEN = 'pat1YDQ6qJZkQIesD.2dcb9e51d0d52133d0b61e23ed2a34da93407996932719e03c18f07e1e544fc8';
+const BASE  = 'apph0TDQ2hmZiAh51';
+const TABLE = 'Table 1';
+const ATURL = `https://api.airtable.com/v0/${BASE}/${encodeURIComponent(TABLE)}`;
+const HDR   = { 'Authorization':`Bearer ${TOKEN}`, 'Content-Type':'application/json' };
+
+// ── MEMBERS ──────────────────────────────────────────────────────────────────
+const MEMBERS = {
+  Genesis:{ i:'GE', c:'#185FA5', b:'#E6F1FB', role:'Treatment & Insurance Coordinator' },
+  Rosie:  { i:'RO', c:'#3B6D11', b:'#EAF3DE', role:'Front Desk (Mon–Tue)' },
+  Matthew:{ i:'MA', c:'#854F0B', b:'#FAEEDA', role:'Dental Assistant' },
+  Jaque:  { i:'JA', c:'#993556', b:'#FBEAF0', role:'Registered Dental Hygienist' },
+  Rue:    { i:'RU', c:'#533AB7', b:'#EEEDFE', role:'Office Manager' },
+  'Dr C': { i:'DC', c:'#0F6E56', b:'#E1F5EE', role:'Dentist / Practice Owner' }
+};
+
+const COLS = [
+  { id:'Todo',        label:'To Do',       dot:'#888780' },
+  { id:'In Progress', label:'In Progress', dot:'#BA7517' },
+  { id:'Done',        label:'Done',        dot:'#1D9E75' }
+];
+
+const HOLIDAYS = [
+  '2026-01-01','2026-01-19','2026-05-25','2026-07-04',
+  '2026-09-07','2026-11-26','2026-12-25','2026-12-28',
+  '2027-01-01','2027-01-19','2027-05-31','2027-07-04',
+  '2027-09-06','2027-11-25','2027-12-24','2027-12-25'
+];
+const HOLIDAY_NAMES = {
+  '2026-01-01':"New Year's Day",'2026-01-19':'MLK Day','2026-05-25':'Memorial Day',
+  '2026-07-04':'Independence Day','2026-09-07':'Labor Day','2026-11-26':'Thanksgiving',
+  '2026-12-25':'Christmas Day','2026-12-28':'Christmas Week',
+  '2027-01-01':"New Year's Day",'2027-01-19':'MLK Day','2027-05-31':'Memorial Day',
+  '2027-07-04':'Independence Day','2027-09-06':'Labor Day','2027-11-25':'Thanksgiving',
+  '2027-12-24':'Christmas Eve','2027-12-25':'Christmas Day'
+};
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+let tasks = [];
+let activePerson = 'Genesis';
+let curView = 'tasks';
+let calYear, calMonth;
+(()=>{ const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); })();
+
+// ── AIRTABLE ─────────────────────────────────────────────────────────────────
+async function loadTasks(){
+  document.getElementById('board').innerHTML='<div class="spinner-wrap"><div class="spinner"></div>Loading tasks...</div>';
+  document.getElementById('berr').innerHTML='';
+  try{
+    let all=[],offset=null;
+    do{
+      const u=ATURL+'?pageSize=100'+(offset?'&offset='+offset:'');
+      const r=await fetch(u,{headers:HDR});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      const d=await r.json();
+      all=all.concat(d.records.map(rec=>({
+        id:rec.id,
+        title:rec.fields.Title||'',
+        person:rec.fields.Person||'',
+        priority:rec.fields.Priority||'Medium',
+        status:rec.fields.Status||'Todo',
+        due:rec.fields.Due||'',
+        notes:rec.fields.Notes||''
+      })));
+      offset=d.offset;
+    } while(offset);
+    tasks=all;
+    renderBoard();
+    if(curView==='mytasks') renderMyTasks();
+    if(curView==='calendar') renderCal();
+  } catch(e){
+    document.getElementById('board').innerHTML='';
+    document.getElementById('berr').innerHTML=`<div class="err-box">Could not connect to Airtable. Check internet and try refreshing. (${e.message})</div>`;
+  }
+}
+
+async function patchTask(id,fields){
+  await fetch(`${ATURL}/${id}`,{method:'PATCH',headers:HDR,body:JSON.stringify({fields})}).catch(e=>console.error(e));
+}
+async function deleteTask(id){
+  if(!confirm('Delete this task?')) return;
+  tasks=tasks.filter(t=>t.id!==id);
+  renderBoard();
+  if(curView==='mytasks') renderMyTasks();
+  if(curView==='calendar') renderCal();
+  await fetch(`${ATURL}/${id}`,{method:'DELETE',headers:HDR}).catch(e=>console.error(e));
+}
+async function moveTask(id,status){
+  const t=tasks.find(t=>t.id===id); if(!t) return;
+  t.status=status;
+  renderBoard();
+  if(curView==='mytasks') renderMyTasks();
+  if(curView==='calendar') renderCal();
+  await patchTask(id,{Status:status});
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function fmtDue(s){
+  if(!s) return null;
+  const d=new Date(s+'T00:00:00'),t=new Date(); t.setHours(0,0,0,0);
+  const diff=Math.round((d-t)/86400000);
+  if(diff<0) return{l:'Overdue',o:true};
+  if(diff===0) return{l:'Today',o:false};
+  if(diff===1) return{l:'Tomorrow',o:false};
+  return{l:d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),o:false};
+}
+function pc(p){ return p==='High'?'bh':p==='Low'?'bl':'bm'; }
+function avHTML(name,sz=20){
+  const m=MEMBERS[name]||{i:'?',c:'#555',b:'#eee'};
+  return `<div class="av" style="width:${sz}px;height:${sz}px;background:${m.b};color:${m.c};font-size:${sz*0.4}px">${m.i}</div>`;
+}
+
+// ── TASK BOARD ───────────────────────────────────────────────────────────────
+function renderBoard(){
+  const fp=document.getElementById('fp').value;
+  const fpr=document.getElementById('fpr').value;
+  const brd=document.getElementById('board');
+  brd.innerHTML='<div class="board-cols" id="bcols"></div>';
+  const bcols=document.getElementById('bcols');
+  COLS.forEach(col=>{
+    const items=tasks.filter(t=>t.status===col.id&&(!fp||t.person===fp)&&(!fpr||t.priority===fpr));
+    const colEl=document.createElement('div'); colEl.className='col';
+    colEl.innerHTML=`<div class="col-head"><div class="col-label"><div class="col-dot" style="background:${col.dot}"></div>${col.label}</div><span class="col-count">${items.length}</span></div><div class="cards" id="c${col.id.replace(' ','')}"></div>`;
+    bcols.appendChild(colEl);
+    const cardsEl=colEl.querySelector('.cards');
+    if(!items.length) cardsEl.innerHTML='<div class="empty-col">No tasks</div>';
+    items.forEach(t=>{
+      const due=fmtDue(t.due);
+      const card=document.createElement('div'); card.className='card';
+      card.innerHTML=`<div class="card-top"><div class="card-title">${t.title}</div><span class="badge ${pc(t.priority)}">${t.priority}</span></div>
+        <div class="card-foot"><div class="av-pill">${avHTML(t.person)}<span class="av-name">${t.person}</span></div>${due?`<span class="due-lbl${due.o?' over':''}">${due.l}</span>`:''}</div>
+        ${t.notes?`<div class="card-note">${t.notes}</div>`:''}
+        <div class="card-acts">
+          ${col.id!=='Todo'?`<button class="cbtn" onclick="moveTask('${t.id}','Todo')">← To do</button>`:''}
+          ${col.id!=='In Progress'?`<button class="cbtn" onclick="moveTask('${t.id}','In Progress')">${col.id==='Todo'?'Start →':'← In progress'}</button>`:''}
+          ${col.id!=='Done'?`<button class="cbtn done-btn" onclick="moveTask('${t.id}','Done')">✓ Done</button>`:''}
+          <button class="cbtn del" onclick="deleteTask('${t.id}')">✕</button>
+        </div>`;
+      cardsEl.appendChild(card);
+    });
+  });
+}
+
+// ── MY TASKS ─────────────────────────────────────────────────────────────────
+function renderMyTasks(){
+  const tabs=document.getElementById('ptabs');
+  tabs.innerHTML=Object.keys(MEMBERS).map(name=>{
+    const m=MEMBERS[name];
+    const open=tasks.filter(t=>t.person===name&&t.status!=='Done').length;
+    return `<button class="ptab${name===activePerson?' active':''}" onclick="selPerson('${name}')">
+      ${avHTML(name,16)}<span>${name}</span>${open?`<span style="font-size:10px;background:var(--green);color:white;border-radius:20px;padding:0 5px;">${open}</span>`:''}
+    </button>`;
+  }).join('');
+  const open=tasks.filter(t=>t.person===activePerson&&t.status!=='Done');
+  const done=tasks.filter(t=>t.person===activePerson&&t.status==='Done');
+  let h='';
+  if(!open.length&&!done.length){h=`<div style="text-align:center;color:#999;padding:2.5rem;font-size:13px;">No tasks for ${activePerson}</div>`;}
+  else{
+    h='<div class="tlist">';
+    if(open.length){
+      h+=`<div class="sec-head">Open (${open.length})</div>`;
+      open.forEach(t=>{const due=fmtDue(t.due);h+=`<div class="trow"><button class="chk" onclick="moveTask('${t.id}','Done');renderMyTasks();" title="Mark done"></button><div class="tinfo"><div class="tname">${t.title}</div><div class="tmeta"><span class="badge ${pc(t.priority)}">${t.priority}</span>${due?`<span class="due-lbl${due.o?' over':''}">${due.l}</span>`:''}</div></div><button class="cbtn del" onclick="deleteTask('${t.id}');renderMyTasks();">✕</button></div>`;});
+    }
+    if(done.length){
+      h+=`<div class="sec-head">Completed (${done.length})</div>`;
+      done.forEach(t=>{h+=`<div class="trow"><button class="chk chkd" onclick="moveTask('${t.id}','Todo');renderMyTasks();" title="Reopen">✓</button><div class="tinfo"><div class="tname done">${t.title}</div></div><button class="cbtn del" onclick="deleteTask('${t.id}');renderMyTasks();">✕</button></div>`;});
+    }
+    h+='</div>';
+  }
+  document.getElementById('mylist').innerHTML=h;
+}
+function selPerson(n){ activePerson=n; renderMyTasks(); }
+
+// ── CALENDAR ─────────────────────────────────────────────────────────────────
+function renderCal(){
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent=`${months[calMonth]} ${calYear}`;
+  const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  document.getElementById('cal-dows').innerHTML=dows.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  const first=new Date(calYear,calMonth,1).getDay();
+  const days=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  let html='';
+  for(let i=0;i<first;i++) html+='<div class="cal-day empty"></div>';
+  for(let d=1;d<=days;d++){
+    const dateStr=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday=new Date(dateStr+'T00:00:00').getTime()===today.getTime();
+    const holiday=HOLIDAYS.includes(dateStr);
+    const dayTasks=tasks.filter(t=>t.due===dateStr&&t.status!=='Done');
+    let inner=`<div class="day-num">${d}</div>`;
+    if(holiday) inner+=`<div class="cal-event holiday-ev">🏖 ${HOLIDAY_NAMES[dateStr]||'Holiday'}</div>`;
+    dayTasks.forEach(t=>{ inner+=`<div class="cal-event task-ev" title="${t.person}: ${t.title}">${t.person.split(' ')[0]}: ${t.title.substring(0,18)}${t.title.length>18?'…':''}</div>`; });
+    html+=`<div class="cal-day${isToday?' today':''}">${inner}</div>`;
+  }
+  document.getElementById('cal-days').innerHTML=html;
+}
+function calNav(dir){ if(dir===0){const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();}else{calMonth+=dir;if(calMonth>11){calMonth=0;calYear++;}else if(calMonth<0){calMonth=11;calYear--;}}renderCal(); }
+
+// ── TEAM ─────────────────────────────────────────────────────────────────────
+function renderMembers(){
+  document.getElementById('mgrid').innerHTML=Object.entries(MEMBERS).map(([name,m])=>`
+    <div class="mcard"><div class="mav" style="background:${m.b};color:${m.c}">${m.i}</div>
+    <div><div class="mname">${name}</div><div class="mrole">${m.role}</div></div></div>`).join('');
+}
+
+// ── SOPs DATA ─────────────────────────────────────────────────────────────────
+const SOPS = [
+  { id:'s1', label:'1. Morning Huddle', sections:[
+    { head:'Before Huddle — Front Desk (7:45 AM)', items:['Pull today\'s schedule — confirm no gaps, no double-books','Flag any unconfirmed appointments','Note patients with outstanding balances >$50','Print or pull up Daily Huddle Report in Dental Intelligence','Check voicemails & respond to any urgent messages'] },
+    { head:'Huddle Topics', items:['<b>Production goal review</b> — RDH: $1,320 | Dentist: $3,680 | Total: $5,000','Review each provider\'s schedule — identify any open chair time','Flag patients due for tx plan follow-up or outstanding treatment','Confirm any new patients — chart, insurance, forms ready?','Review any lab cases expected in today','Assign any unscheduled family members to re-appoint','TennCare / Wellcare flag — confirm eligibility checked'] },
+    { head:'Before First Patient', items:['Ops stocked and turned over — DA confirms','Sterilization area cleared from prior day','Any pending prior auths — status confirmed?'] },
+    { note:'Huddle should never run past 8:15 AM. If agenda is long, table non-urgent items for end-of-day.' }
+  ]},
+  { id:'s2', label:'2. Scheduling & Daily Flow', sections:[
+    { head:'Booking a New Patient', items:['Collect: full name, DOB, phone, email, address','Insurance info — carrier, member ID, subscriber name/DOB','Determine chief complaint or reason for visit','Schedule exam + full series (FMX) or BWX if first visit','Add to New Patient tracker in Dental Intelligence','Send new patient forms link (Open Dental web forms or paper)','Confirm appointment 2 days prior via text/call'] },
+    { head:'Scheduling to Hit Daily Goals', items:['<b>Block hygiene column first</b> — RDH goal: $1,320/day','Fill dentist column with mix: exams, restorative, extractions','Avoid scheduling all recalls back-to-back without restorative buffer','Leave one flexible slot per provider for same-day emergencies (4pm slot)','If a gap opens, pull from ASAP/short-notice list immediately'] },
+    { head:'Recall & Reappointment', items:['Reappoint every patient at checkout — do not let them leave unscheduled','Use Dental Intelligence recall list daily — call patients overdue 30+ days','Document all recall attempts in Open Dental'] },
+    { head:'Scheduling Handoff (Front Desk → Clinical)', items:['Route slip or digital note placed in chart before patient is seated','Flag balance, insurance issue, or special notes in Open Dental alert','Confirm DA is notified of any add-ons or changes same-day'] },
+    { note:'All scheduling SOPs apply equally.' }
+  ]},
+  { id:'s3', label:'3. Insurance & Billing', sections:[
+    { head:'Verification — 48 Hours Before Appointment', items:['Log into carrier portal or call to verify active coverage','Confirm: plan type, deductible (met/remaining), annual max, frequencies','Note any waiting periods, missing tooth clauses, or PA requirements','For TennCare/CoverKids — confirm eligibility','Document all findings in Open Dental insurance plan notes','Flag if PA is needed — initiate immediately, do not wait until day-of'] },
+    { head:'Day-of Insurance Tasks', items:['Confirm insurance at check-in — ID card or portal confirmation','Collect copay/patient portion at time of service','Verify any same-day add-on procedures are covered before performing'] },
+    { head:'Claims & Billing (Remote Billing Team Handoff)', items:['Ensure all procedures coded and posted in Open Dental before EOD','Attach X-rays, perio charts, or narratives for procedures requiring them','Flag any claims likely to require appeal or additional documentation','Check Open Dental for rejected/denied claims flagged by billing team','Follow up on outstanding claims >30 days — note in billing tracker'] },
+    { head:'Membership Plan Patients', items:["Flag in Open Dental as 'Membership Plan' — no insurance billing",'Confirm membership tier and included services at check-in','Collect any additional fees (beyond plan) at time of service'] },
+    { note:'TennCare eligibility can change monthly. Always verify — do not assume active coverage from prior visits.' }
+  ]},
+  { id:'s4', label:'4. Front Desk Coverage', sections:[
+    { head:'Standard Daily Responsibilities', items:['Phones answered by 8:00 AM','Check-in: collect forms, confirm insurance, collect copay','Check-out: post procedures, collect balance, reappoint','End-of-day: reconcile all payments, run EOD report in Open Dental','Lock physical front desk, shut down check-in kiosk'] },
+    { head:'When Cross-Trained DA Covers Front Desk', items:['Clinical duties handed to RDH/Lead DA before front desk shift starts','Cross-trained DA follows this same checklist','Notify Office Manager if both clinical and front desk are simultaneously understaffed'] },
+    { head:'Opening Duties', items:['Unlock front door, turn on lights, check-in kiosk, Open Dental','Pull schedule for the day — print or note provider totals','Check overnight voicemails and return calls','Confirm appointment reminders sent'] },
+    { head:'Closing Duties', items:['All charges posted for the day','Payments reconciled — cash, card, check balanced','EOD report run and sent to Office Manager','Tomorrow\'s schedule reviewed — any gaps flagged','Phones forwarded to voicemail','All patient-facing areas tidied and sanitized'] }
+  ]},
+  { id:'s5', label:'5. Membership Plan', sections:[
+    { head:'Enrolling a New Member', items:['Explain plan benefits, tiers, and pricing — no insurance needed','Get patients to scan QR code or send link to complete enrollment form','Process payment — confirm recurring billing setup if applicable',"Flag patient in Open Dental: 'Membership Plan' in insurance/note field",'Confirm membership email is received','Educate on included services, discounts and how to use plan at each visit'] },
+    { head:'At Each Membership Patient Visit', items:['Confirm active membership at check-in','Verify which services are included under their tier','Do NOT bill to dental insurance — plan covers in-house only','Collect any fees above included services at time of service','Document visit in Open Dental under membership patient flag'] },
+    { head:'Tracking & Renewal', items:['Membership Roster is maintained on DentalHq','Renewal reminders are sent automatically','Flag lapsed members — attempt reactivation outreach within 7 days','Report membership enrollment numbers in weekly team meeting'] },
+    { head:'Marketing Touchpoints (Front Desk Role)', items:['Mention membership plan to every uninsured new patient at check-in','Have flyer visible at front desk and in waiting area at all times','Offer plan at checkout to any patient who expresses cost concerns'] },
+    { note:"Target: uninsured patients, self-pay, and TennCare patients who lose eligibility. 'No insurance, no problem.'" }
+  ]},
+  { id:'s6', label:'6. Weekly Checklist', sections:[
+    { head:'Monday — Start of Week', items:['Pull weekly production goal report from Dental Intelligence','Review prior week\'s unscheduled treatment — assign follow-up calls','Confirm all insurance verifications done for the week\'s patients','Check supply levels — flag low stock to Office Manager','Review open claims >14 days — escalate to billing team'] },
+    { head:'Wednesday — Mid-Week Check', items:['Track production-to-goal vs. week target — adjust schedule if behind','Follow up on any pending prior authorizations','Check recall list — call patients overdue for hygiene','Sterilization equipment log reviewed and signed','Any patient complaints or concerns documented and addressed'] },
+    { head:'Friday — End of Week', items:['Run weekly production report','Post all outstanding charges and reconcile week\'s payments','Review next week\'s schedule — fill any gaps today','Order any supplies that are running low','Confirm lab cases: received, pending, and due next week','Team shoutout / wins from the week 🎉'] },
+    { head:'Monthly (Office Manager)', items:['Membership plan enrollment review — new, lapsed, total active','Review Dental Intelligence KPIs: production, collections, new patients','HR: confirm timesheets, PTO balances, any training due','Vendor/supply spend vs. budget','Review any open patient billing complaints or disputes'] },
+    { note:'Weekly reports should be shared on our Team Board every Friday.' }
+  ]},
+  { id:'s7', label:'7. Team Communication', sections:[
+    { head:'Primary Channel: Group Text / SMS', items:['Team group text is the official channel for same-day operational updates','All team members must have notifications on during business hours','Respond to group text messages within 30 minutes during the workday','<b>Do not use group text for sensitive matters</b> — patient info, HR issues, complaints','<b>No patient names or PHI in group text</b> — HIPAA requirement'] },
+    { head:'What Goes in the Group Text', items:['Running late / early arrival updates','Same-day schedule changes or add-ons','Supply or equipment issues that affect the day','Last-minute coverage requests or call-outs','Quick team wins or shoutouts'] },
+    { head:'What Goes Through the Office Manager Directly', items:['<b>Call-outs and sick day notifications</b> — text OM directly, not just the group','Coverage requests','Any patient complaint, incident, or conflict','Requests that require Dr. C\'s approval','Any concern about a coworker, workflow, or policy'] },
+    { head:'Chain of Communication', items:['<b>Operational issues:</b> Team → Office Manager','<b>Clinical issues:</b> DA / RDH → Dr. C','<b>Patient complaints:</b> Front Desk → OM → Dr. C if escalation needed','<b>HR concerns:</b> Team member → OM privately'] },
+    { head:'Meeting Cadence', items:['Morning Huddle: daily, 8:00 AM, 15 min max','Team Check-in Meeting: monthly, led by Rue — production, wins, issues, updates','One-on-ones: as needed — any team member may request a private meeting with OM','Ad hoc clinical meetings: Dr. C calls as needed for clinical protocol updates'] }
+  ]},
+  { id:'s8', label:'8. Time Off & Holidays', sections:[
+    { head:'Practice Closure — Federal Holidays', items:["New Year's Day (January 1)",'Martin Luther King Jr. Day','Memorial Day','Independence Day (July 4)','Labor Day','Thanksgiving Day','Christmas Day (December 25)','Christmas Week (dates confirmed by OM in October annually)'] },
+    { head:'Time-Off Request Process', items:['Submit all time-off requests to Office Manager','Minimum 2 weeks notice required for all planned time off','Requests approved based on schedule coverage — not first-come-first-served during peak periods','No more than one clinical team member off on the same day without Dr. C approval','Time off during the last week of each month requires extra notice','<b>Emergency absences:</b> notify OM by 7:00 AM via direct text — group text alone is not sufficient'] },
+    { head:'Call-Out Protocol', items:['Text OM directly (not just the group) by 7:00 AM if calling out sick','OM will arrange coverage and notify the team','Repeat call-outs without documentation may trigger a formal check-in with OM','Team members are encouraged to flag recurring health issues privately with OM'] },
+    { note:'Excessive unplanned absences affect patient care and team coverage. Please communicate early — we will always work with you in good faith.' }
+  ]},
+  { id:'s9', label:'9. Patient Communication', sections:[
+    { head:'Appointment Reminders (Dental Intelligence Automated)', items:['Automated reminder sent 2 days before appointment','Second reminder sent 1 day before','If patient does not confirm — front desk calls manually same day or day before','Document all manual confirmation attempts in Open Dental','Unconfirmed appointments flagged in morning huddle'] },
+    { head:'Phone & In-Person Standards', items:["Always use the patient's name once confirmed",'Speak clearly, warmly, and without dental jargon','Never place a patient on hold for more than 90 seconds without checking back in',"If unable to answer a question, say: \"Let me get the right person to help you with that\" — never guess","End every call with a next step: appointment scheduled, callback committed, or question resolved"] },
+    { head:'Treatment & Financial Communication', items:['Present treatment plans with empathy — explain why, not just what','Always offer the membership plan to uninsured or self-pay patients','Provide written treatment plan with estimated cost before patient leaves','<b>Never quote insurance benefits as guarantees</b> — use: "Based on your plan, your estimated portion is..."','Billing disputes: front desk documents, escalates to OM — never argued at the desk'] },
+    { head:'Dismissed / Flagged Patients', items:['Dismissed patients are not to be rescheduled without written approval from OM or Dr. C',"If a dismissed patient calls, politely state: \"I'll need to have our office manager give you a call back\"",'Do not engage with dismissed patients about the reason for dismissal over the phone','Document all contacts from dismissed patients in Open Dental with date and time'] },
+    { head:'Online Reviews & Reputation', items:['At checkout, invite every satisfied patient to leave a Google review','Script: "We\'d really appreciate it if you shared your experience on Google — it helps other families find us!"','<b>Never ask for reviews in exchange for discounts or free services</b> — violates FTC guidelines','Negative reviews: flag to OM — do not respond without approval','OM or Dr. C approve all public responses to reviews'] },
+    { head:'HIPAA-Safe Communication Rules', items:['Texts and emails may only contain: appointment date/time, reminders, and general practice info','Never include diagnosis, treatment details, or financial info in text/email','Voicemails: first name, callback number, and practice name only — no clinical info','Confirm patient identity before discussing any account or clinical information'] },
+    { note:'When in doubt about what can be shared — do not share it. Ask Rue.' }
+  ]}
+];
+
+const POLICIES = [
+  { id:'p1', label:'Dress Code', sections:[
+    { head:'Monday–Thursday | Uniform Days', items:['✓ Springbrook-issued scrubs — wear as provided','✓ Black scrubs acceptable if Springbrook scrubs are unavailable','✓ Scrubs must be clean and in good condition — no visible stains, tears, or excessive fading','✓ Closed-toe, non-slip shoes required for all clinical staff','✓ Solid-color undershirts permitted — white, black, or gray only','✗ Hoodies, athletic wear, or denim over or under scrubs','✗ Shorts, skirts, or non-scrub bottoms'] },
+    { head:'Friday | Casual Day', items:['✓ Clean, neat casual clothing — jeans, casual tops, casual dresses or skirts','✓ Closed-toe shoes required for clinical staff on Fridays','✗ Offensive, political, or graphic-print clothing','✗ Flip flops or open-toe shoes for clinical staff','✗ Ripped, overly distressed, or athletic/gym wear','✗ Revealing clothing — no crop tops, low-cut tops, or short skirts/shorts'] },
+    { head:'Hair & Personal Grooming', items:['✓ Hair must be clean and neatly styled','✓ Facial hair must be neat and well-groomed','✗ Strong fragrances — perfume, cologne, or scented lotion (many patients have sensitivities)'] },
+    { head:'Nails — Clinical Staff (DA, RDH, Dr. C)', items:['✗ Gel, acrylic, or artificial nails of any kind — infection control standard, non-negotiable','✗ Nail polish for clinical staff — chipping polish is a contamination risk','✓ Natural nails kept short and clean — tips should not extend past the fingertip'] },
+    { head:'Nails — Non-Clinical Staff (Front Desk)', items:['✓ Gel or polished nails permitted — neat and professional appearance','✓ Reasonable length acceptable for non-clinical roles'] },
+    { note:'We are a patient-facing practice. How we present ourselves builds trust. Dress standards apply to everyone including leadership.' }
+  ]},
+  { id:'p2', label:'Team Celebrations', sections:[
+    { head:'Birthday Celebrations', items:["✓ Every team member's birthday is celebrated during morning huddle",'✓ Practice provides: a cake or sweet treat and a team card signed by all staff','✓ Office Manager organizes the cake and card',"✓ Birthday person's preference honored where possible — Rue will ask in advance",'☐ Submit birthday month to OM during onboarding or notify Rue before your first birthday at the practice'] },
+    { head:'Production Milestone Celebrations', items:['✓ Team wins are called out at morning huddle when they happen','✓ Hitting or exceeding weekly production goal','✓ Best single-day production record','✓ New patient record for the month','✓ Membership plan enrollment milestone (first 10, first 25, first 50 members)','✓ Full schedule week — zero no-shows or last-minute cancellations','✓ Milestone celebrations may include: a team lunch, treat, or shoutout at huddle 🎉'] },
+    { head:'General Team Culture Standards', items:['✓ Treat every team member with respect regardless of role','✓ Disagreements are handled privately and professionally — not in front of patients','✓ Gossip, negativity, or complaining in patient areas is not acceptable','✓ New ideas and feedback are always welcome — bring them to Rue or raise at monthly team meeting','✓ We celebrate each other publicly and address concerns privately','✗ Cliques, exclusionary behavior, or making new hires feel unwelcome'] },
+    { note:'Springbrook Dentistry is a startup — everyone\'s contribution matters. We are building something together.' }
+  ]}
+];
+
+function buildHandbookSection(data, navId, contentId){
+  let activeSop=data[0].id;
+  const nav=document.getElementById(navId);
+  const content=document.getElementById(contentId);
+  nav.innerHTML=data.map(s=>`<button class="sop-tab${s.id===activeSop?' active':''}" onclick="sopSwitch('${s.id}','${navId}','${contentId}')">${s.label}</button>`).join('');
+  content.innerHTML=data.map(s=>`<div class="sop-panel${s.id===activeSop?' active':''}" id="panel-${s.id}">${s.sections.map(sec=>`
+    <div class="sop-section">
+      ${sec.head?`<div class="sop-section-head">${sec.head}</div>`:''}
+      ${(sec.items||[]).map(i=>`<div class="sop-item"><span style="color:var(--green);font-size:12px;margin-top:1px;flex-shrink:0;">▸</span><span>${i}</span></div>`).join('')}
+      ${sec.note?`<div class="sop-note">📌 ${sec.note}</div>`:''}
+    </div>`).join('')}</div>`).join('');
+}
+function sopSwitch(id, navId, contentId){
+  document.querySelectorAll(`#${navId} .sop-tab`).forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll(`#${contentId} .sop-panel`).forEach(p=>p.classList.remove('active'));
+  document.querySelector(`#${navId} [onclick*="'${id}'"]`).classList.add('active');
+  document.getElementById(`panel-${id}`).classList.add('active');
+}
+
+// ── MODAL ────────────────────────────────────────────────────────────────────
+function openModal(){
+  document.getElementById('t-title').value='';
+  document.getElementById('t-notes').value='';
+  document.getElementById('t-due').value=new Date().toISOString().split('T')[0];
+  document.getElementById('merr').style.display='none';
+  document.getElementById('msave').textContent='Add Task';
+  document.getElementById('msave').disabled=false;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+async function saveTask(){
+  const title=document.getElementById('t-title').value.trim();
+  if(!title){document.getElementById('t-title').focus();return;}
+  const btn=document.getElementById('msave');
+  btn.textContent='Saving...'; btn.disabled=true;
+  document.getElementById('merr').style.display='none';
+  const fields={
+    Title:title,
+    Person:document.getElementById('t-person').value,
+    Priority:document.getElementById('t-pri').value,
+    Status:'Todo',
+    Due:document.getElementById('t-due').value,
+    Notes:document.getElementById('t-notes').value.trim()
+  };
+  try{
+    const r=await fetch(ATURL,{method:'POST',headers:HDR,body:JSON.stringify({fields})});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    tasks.push({id:d.id,...fields,status:'Todo'});
+    closeModal(); renderBoard();
+    if(curView==='mytasks') renderMyTasks();
+    if(curView==='calendar') renderCal();
+  } catch(e){
+    const el=document.getElementById('merr');
+    el.textContent='Could not save. Please try again. ('+e.message+')';
+    el.style.display='block';
+    btn.textContent='Add Task'; btn.disabled=false;
+  }
+}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
+
+// ── NAV ──────────────────────────────────────────────────────────────────────
+const VTITLES={tasks:'Task Board',mytasks:'My Tasks',calendar:'Team Calendar',members:'Team',values:'Values',sops:'SOPs',policies:'Policies'};
+function show(id){
+  curView=id;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  document.getElementById('page-title').textContent=VTITLES[id];
+  const isTask=id==='tasks'||id==='mytasks';
+  document.getElementById('btn-add').style.display=isTask?'inline-flex':'none';
+  document.getElementById('btn-refresh').style.display=isTask||id==='calendar'?'inline-flex':'none';
+  if(id==='tasks') renderBoard();
+  if(id==='mytasks') renderMyTasks();
+  if(id==='calendar') renderCal();
+  if(id==='members') renderMembers();
+  if(id==='sops') buildHandbookSection(SOPS,'sop-nav','sop-content');
+  if(id==='policies') buildHandbookSection(POLICIES,'pol-nav','pol-content');
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+loadTasks();
+renderMembers();
+</script>
+</body>
+</html>
